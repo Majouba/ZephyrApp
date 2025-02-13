@@ -1,22 +1,25 @@
 import React, { useState, useContext } from 'react';
-import './Connexion.css';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { AuthContext } from '../../context/AuthContext'; // Import du contexte
+import { AuthContext } from '../../context/AuthContext';
+import './Connexion.css';
 
-function Connexion() {
+const Connexion = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useContext(AuthContext); // Accès à la fonction login du contexte
+  const [errorMessage, setErrorMessage] = useState('');
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage('');
 
     if (!email || !password) {
+      setErrorMessage('❌ Tous les champs sont requis');
       toast.error('❌ Tous les champs sont requis');
       setIsLoading(false);
       return;
@@ -24,11 +27,11 @@ function Connexion() {
 
     try {
       const response = await axios.post('http://localhost:5000/api/login', { email, password });
-      login(response.data.user); // Mise à jour du contexte utilisateur
+      login(response.data.user);
       toast.success('✅ Connexion réussie ! Redirection en cours...');
-      navigate('/mon-profil'); // Redirection immédiate après mise à jour du contexte
-    } catch (err) {
-      console.error(err);
+      navigate('/mon-profil');
+    } catch (error) {
+      setErrorMessage('❌ Erreur lors de la connexion. Vérifiez vos identifiants.');
       toast.error('❌ Erreur lors de la connexion. Vérifiez vos identifiants.');
     } finally {
       setIsLoading(false);
@@ -41,8 +44,9 @@ function Connexion() {
       <div className="form-container">
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Email :</label>
+            <label htmlFor="email">Email :</label>
             <input
+              id="email"
               type="email"
               placeholder="Entrez votre email"
               value={email}
@@ -51,8 +55,9 @@ function Connexion() {
             />
           </div>
           <div className="form-group">
-            <label>Mot de passe :</label>
+            <label htmlFor="password">Mot de passe :</label>
             <input
+              id="password"
               type="password"
               placeholder="Entrez votre mot de passe"
               value={password}
@@ -60,6 +65,11 @@ function Connexion() {
               required
             />
           </div>
+          {errorMessage && (
+            <div role="alert" className="error-message">
+              {errorMessage}
+            </div>
+          )}
           <button type="submit" className="submit-button" disabled={isLoading}>
             {isLoading ? 'Connexion en cours...' : 'Se connecter'}
           </button>
@@ -67,6 +77,6 @@ function Connexion() {
       </div>
     </div>
   );
-}
+};
 
 export default Connexion;
