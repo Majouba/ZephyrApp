@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
 import './Connexion.css';
+import { useNavigate } from 'react-router-dom'; // Importation du hook useNavigate
 
 function Connexion() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate(); // Initialisation de useNavigate
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
     // Validation et soumission du formulaire
     if (!username || !password) {
       setError('Tous les champs sont requis');
     } else {
       setError('');
-      // Logique pour se connecter ici
+      // Simuler une connexion réussie
+      setTimeout(() => {
+        navigate('/'); // Redirection vers la page d'accueil après la connexion
+      }, 1000); // Attente de 1 seconde avant la redirection
     }
   };
 

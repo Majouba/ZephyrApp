@@ -13,14 +13,14 @@ const JWT_SECRET = 'ton_super_secret_jwt';
 app.use(cors());
 app.use(express.json());
 
-// Swagger configuration 
+// Swagger configuration
 const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
       title: 'ZephyrApp API Documentation',
       version: '1.0.0',
-      description: 'API pour la gestion des utilisateurs : inscription, connexion, et accès protégé.',
+      description: 'API pour la gestion des utilisateurs : inscription, connexion, mise à jour et accès protégé.',
     },
     servers: [{ url: 'http://localhost:5000' }],
   },
@@ -202,29 +202,43 @@ app.post('/api/login', async (req, res) => {
 
 /**
  * @swagger
- * /api/protected:
- *   get:
- *     summary: Route protégée nécessitant un token JWT.
- *     description: Cette route est accessible uniquement aux utilisateurs authentifiés.
+ * /api/users/{id}:
+ *   put:
+ *     summary: Met à jour les informations d'un utilisateur.
  *     parameters:
- *       - in: header
- *         name: Authorization
+ *       - in: path
+ *         name: id
  *         required: true
  *         schema:
- *           type: string
- *         description: Token JWT sous la forme `Bearer <token>`.
+ *           type: integer
+ *         description: ID de l'utilisateur.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
  *     responses:
  *       200:
- *         description: Accès à la route protégée.
- *       401:
- *         description: Token invalide ou expiré.
- *       403:
- *         description: Token requis.
+ *         description: Informations mises à jour avec succès.
+ *       500:
+ *         description: Erreur lors de la mise à jour.
  */
-app.get('/api/protected', verifyToken, (req, res) => {
-  res.status(200).json({
-    message: 'Route protégée accessible',
-    user: req.user,
+app.put('/api/users/:id', (req, res) => {
+  const { id } = req.params;
+  const { name, email } = req.body;
+
+  const query = 'UPDATE users SET name = ?, email = ? WHERE id = ?';
+  db.query(query, [name, email, id], (err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erreur lors de la mise à jour des informations.' });
+    }
+    res.status(200).json({ message: 'Informations mises à jour avec succès !', user: { id, name, email } });
   });
 });
 

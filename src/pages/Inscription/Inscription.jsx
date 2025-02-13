@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Importation du hook useNavigate
 
 function Inscription() {
   const [username, setUsername] = useState('');
@@ -7,17 +8,21 @@ function Inscription() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const navigate = useNavigate(); // Initialisation de useNavigate
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/register', {
+      await axios.post('http://localhost:5000/api/register', {
         username,
         email,
         password,
       });
-      setSuccess('Inscription réussie !');
+      setSuccess('Inscription réussie ! Vous allez être redirigé vers la page de connexion.');
       setError('');
+      setTimeout(() => {
+        navigate('/connexion'); // Redirection vers la page de connexion après 2 secondes
+      }, 2000);
     } catch (err) {
       setError('Erreur lors de l\'inscription');
       setSuccess('');
