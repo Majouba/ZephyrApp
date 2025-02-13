@@ -9,12 +9,12 @@ function Inscription() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // État pour le loader
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Active le loader
+    setIsLoading(true);
 
     try {
       await axios.post('http://localhost:5000/api/register', {
@@ -24,14 +24,14 @@ function Inscription() {
       });
 
       toast.success('✅ Inscription réussie ! Redirection vers la page de connexion...');
-      setTimeout(() => {
-        navigate('/connexion');
-      }, 3000); // Redirection après 3 secondes
+      
+      // Redirection immédiate après l'inscription réussie
+      navigate('/connexion');
     } catch (err) {
       console.error(err);
       toast.error('❌ Erreur lors de l\'inscription. Veuillez réessayer.');
     } finally {
-      setIsLoading(false); // Désactive le loader
+      setIsLoading(false);
     }
   };
 
