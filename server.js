@@ -13,7 +13,7 @@ app.use(express.json());
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'root', // à ajuster si nécessaire
+  password: 'root', // À ajuster si nécessaire
   database: 'ZephyrApp',
 });
 
@@ -25,12 +25,25 @@ db.connect((err) => {
   }
 });
 
+// Route de test
+app.get('/api/test', (req, res) => {
+  res.status(200).json({ message: 'API test accessible' });
+});
+
 // API d'inscription
 app.post('/api/register', async (req, res) => {
   const { username, email, password } = req.body;
 
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: 'Tous les champs sont requis' });
+  }
+
   // Vérifier si l'utilisateur existe déjà
   db.query('SELECT * FROM users WHERE email = ?', [email], async (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erreur interne du serveur' });
+    }
+
     if (result.length > 0) {
       return res.status(400).json({ error: 'Cet email est déjà utilisé' });
     }
