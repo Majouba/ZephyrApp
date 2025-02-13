@@ -5,6 +5,7 @@ import WeatherCard from './components/WeatherCard/WeatherCard';
 import SearchInput from './components/SearchInput/SearchInput';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
+import NavBar from './components/NavBar/NavBar'; // Importation de NavBar
 import MapPage from './pages/MapPage/MapPage';
 import Connexion from './pages/Connexion/Connexion';
 import Inscription from './pages/Inscription/Inscription';
@@ -13,7 +14,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState(null);
 
@@ -35,37 +36,11 @@ function App() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    toast.info('👋 Déconnexion réussie.');
-  };
-
   return (
     <Router>
       <div className="container">
-        <nav className="nav-bar">
-          <Link to="/">Accueil</Link>
-          {!user ? (
-            <>
-              <Link to="/inscription">
-                <button className="nav-button">Inscription</button>
-              </Link>
-              <Link to="/connexion">
-                <button className="nav-button">Connexion</button>
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link to="/mon-profil">
-                <button className="nav-button">Mon Profil</button>
-              </Link>
-              <button className="nav-button" onClick={handleLogout}>
-                Se déconnecter
-              </button>
-            </>
-          )}
-        </nav>
-
+        <NavBar /> {/* Remplacement du code de navigation par NavBar */}
+        
         <Routes>
           <Route
             path="/"
@@ -74,15 +49,17 @@ function App() {
                 <h1>Météo en direct</h1>
                 <div className="search-section">
                   <SearchInput city={city} setCity={setCity} onSearch={fetchWeather} />
-                  <Link to="/map">
-                    <button className="map-button">Carte</button>
-                  </Link>
+                  {user && (
+                    <Link to="/map">
+                      <button className="map-button">Carte</button>
+                    </Link>
+                  )}
                 </div>
                 {weather && <WeatherCard weather={weather} />}
               </div>
             }
           />
-          <Route path="/map" element={<MapPage />} />
+          <Route path="/map" element={user ? <MapPage /> : <Navigate to="/connexion" />} />
           <Route path="/connexion" element={user ? <Navigate to="/mon-profil" /> : <Connexion />} />
           <Route path="/inscription" element={user ? <Navigate to="/mon-profil" /> : <Inscription />} />
           <Route path="/mon-profil" element={user ? <MonProfil /> : <Navigate to="/connexion" />} />
