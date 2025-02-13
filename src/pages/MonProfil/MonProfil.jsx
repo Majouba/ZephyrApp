@@ -28,6 +28,7 @@ function MonProfil() {
       setUser(response.data.user);
       toast.success('✅ Informations mises à jour avec succès !');
     } catch (error) {
+      console.error('Erreur de mise à jour :', error);
       toast.error('❌ Erreur lors de la mise à jour.');
     } finally {
       setIsLoading(false);
@@ -50,8 +51,9 @@ function MonProfil() {
       <div className="profil-details">
         <form onSubmit={handleUpdate}>
           <div>
-            <label>Nom :</label>
+            <label htmlFor="name">Nom :</label>
             <input
+              id="name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -59,8 +61,9 @@ function MonProfil() {
             />
           </div>
           <div>
-            <label>Email :</label>
+            <label htmlFor="email">Email :</label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
