@@ -3,27 +3,40 @@ import './MonProfil.css';
 import { AuthContext } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function MonProfil() {
-  const { user, logout, setUser } = useContext(AuthContext); // setUser pour mettre à jour les infos utilisateur
+  const { user, logout, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [name, setName] = useState(user?.name);
-  const [email, setEmail] = useState(user?.email);
-  const [message, setMessage] = useState('');
+  const [name, setName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
+    if (!name || !email) {
+      toast.warn('⚠️ Veuillez remplir tous les champs.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const response = await axios.put(`http://localhost:5000/api/users/${user.id}`, { name, email });
-      setUser(response.data.user); // Mise à jour des infos dans le contexte
-      setMessage('✅ Informations mises à jour avec succès !');
+      setUser(response.data.user);
+      toast.success('✅ Informations mises à jour avec succès !');
     } catch (error) {
-      setMessage('❌ Erreur lors de la mise à jour.');
+      toast.error('❌ Erreur lors de la mise à jour.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleLogout = () => {
     logout();
+    toast.info('👋 Déconnexion réussie.');
     navigate('/');
   };
 
@@ -54,9 +67,10 @@ function MonProfil() {
               required
             />
           </div>
-          <button type="submit" className="update-button">Mettre à jour</button>
+          <button type="submit" className="update-button" disabled={isLoading}>
+            {isLoading ? 'Mise à jour...' : 'Mettre à jour'}
+          </button>
         </form>
-        {message && <p className="message">{message}</p>}
       </div>
       <button className="logout-button" onClick={handleLogout}>
         Se déconnecter

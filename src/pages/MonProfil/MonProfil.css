@@ -1,44 +1,78 @@
 .mon-profil-container {
-    text-align: center;
-    padding: 20px;
-  }
-  
-  .profil-details {
-    margin: 20px 0;
-    font-size: 18px;
-  }
-  
-  .update-button {
-    background-color: #27ae60;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-top: 10px;
-  }
-  
-  .update-button:hover {
-    background-color: #219150;
-  }
-  
-  .message {
-    margin-top: 10px;
-    color: #2ecc71;
-    font-weight: bold;
-  }
-  
-  .logout-button {
-    background-color: #e74c3c;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-top: 20px;
-  }
-  
-  .logout-button:hover {
-    background-color: #c0392b;
-  }
-  
+  text-align: center;
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #f4f4f4;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profil-details {
+  margin: 20px 0;
+  font-size: 18px;
+  text-align: left;
+}
+
+.profil-details label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.profil-details input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.update-button {
+  background-color: #27ae60;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+  font-weight: bold;
+}
+
+.update-button:hover {
+  background-color: #219150;
+}
+
+.update-button:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+.message {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.success {
+  color: #2ecc71;
+}
+
+.error {
+  color: #e74c3c;
+}
+
+.logout-button {
+  background-color: #e74c3c;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+  background-color: #c0392b;
+}

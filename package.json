@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
-    "start": "concurrently -k \"npm run dev\" \"node server.js\" --names \"FRONT,BACK\" --prefix-colors \"bgBlue.bold,bgGreen.bold\""
+    "start-backend": "node server.js",
+    "dev-all": "concurrently -k \"npm run dev\" \"npm run start-backend\" --names \"FRONT,BACK\" --prefix-colors \"bgBlue.bold,bgGreen.bold\""
   },
   "dependencies": {
     "@lottiefiles/react-lottie-player": "^3.6.0",
@@ -24,7 +25,9 @@
     "react": "^18.3.1",
     "react-autosuggest": "^10.1.0",
     "react-dom": "^18.3.1",
+    "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^7.1.5",
+    "react-toastify": "^11.0.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   },

@@ -3,6 +3,18 @@ echo ======================================================
 echo 🔄 Mise à jour et installation des dépendances...
 npm install
 
+:: Vérifie si le fichier .env existe
+echo ======================================================
+echo ⚙️ Vérification du fichier .env...
+if exist .env (
+    echo ✅ Le fichier .env est présent.
+) else (
+    echo ❌ Le fichier .env est manquant. Veuillez le créer et ajouter la clé API.
+    echo Exemple : VITE_API_KEY=VotreCleAPI
+    pause
+    exit /b
+)
+
 :: Vérifie si 'concurrently' est installé
 echo ======================================================
 echo ⚙️ Vérification de 'concurrently'...
@@ -23,6 +35,17 @@ if errorlevel 1 (
     npm install react-toastify --save
 ) else (
     echo ✅ 'react-toastify' déjà installé.
+)
+
+:: Vérifie si 'react-loader-spinner' est installé
+echo ======================================================
+echo ⚙️ Vérification de 'react-loader-spinner'...
+npm list react-loader-spinner >nul 2>&1
+if errorlevel 1 (
+    echo 🛠️ 'react-loader-spinner' non trouvé. Installation en cours...
+    npm install react-loader-spinner --save
+) else (
+    echo ✅ 'react-loader-spinner' déjà installé.
 )
 
 :: Lancer le backend et le frontend

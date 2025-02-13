@@ -4,21 +4,22 @@ import WeatherService from './services/WeatherService';
 import WeatherCard from './components/WeatherCard/WeatherCard';
 import SearchInput from './components/SearchInput/SearchInput';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
-import { useAuth } from './context/AuthContext'; // Import du contexte Auth
+import { useAuth } from './context/AuthContext';
 import MapPage from './pages/MapPage/MapPage';
 import Connexion from './pages/Connexion/Connexion';
 import Inscription from './pages/Inscription/Inscription';
 import MonProfil from './pages/MonProfil/MonProfil';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
-  const { user, logout } = useAuth(); // Accès au contexte d'authentification
+  const { user, logout } = useAuth();
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState(null);
-  const [error, setError] = useState('');
 
   const fetchWeather = async () => {
     if (!city.trim()) {
-      setError('❌ Localisation non trouvée. Veuillez entrer le nom d\'une ville et vérifier l’orthographe.');
+      toast.warn('⚠️ Veuillez entrer le nom d\'une ville.');
       setWeather(null);
       return;
     }
@@ -26,12 +27,17 @@ function App() {
     try {
       const data = await WeatherService.getWeatherByCity(city);
       setWeather(data);
-      setError('');
+      toast.success('🌞 Météo trouvée avec succès !');
     } catch (err) {
       console.error(err);
-      setError('❌ Localisation non trouvée. Veuillez entrer le nom d\'une ville et vérifier l’orthographe.');
       setWeather(null);
+      toast.error('❌ Erreur lors de la récupération de la météo.');
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast.info('👋 Déconnexion réussie.');
   };
 
   return (
@@ -53,7 +59,7 @@ function App() {
               <Link to="/mon-profil">
                 <button className="nav-button">Mon Profil</button>
               </Link>
-              <button className="nav-button" onClick={logout}>
+              <button className="nav-button" onClick={handleLogout}>
                 Se déconnecter
               </button>
             </>
@@ -64,7 +70,7 @@ function App() {
           <Route
             path="/"
             element={
-              <>
+              <div className="home-page">
                 <h1>Météo en direct</h1>
                 <div className="search-section">
                   <SearchInput city={city} setCity={setCity} onSearch={fetchWeather} />
@@ -73,8 +79,7 @@ function App() {
                   </Link>
                 </div>
                 {weather && <WeatherCard weather={weather} />}
-                {error && <p className="error-message">{error}</p>}
-              </>
+              </div>
             }
           />
           <Route path="/map" element={<MapPage />} />
@@ -82,6 +87,8 @@ function App() {
           <Route path="/inscription" element={user ? <Navigate to="/mon-profil" /> : <Inscription />} />
           <Route path="/mon-profil" element={user ? <MonProfil /> : <Navigate to="/connexion" />} />
         </Routes>
+
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop />
       </div>
     </Router>
   );

@@ -1,25 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import './Connexion.css';
-import { useNavigate } from 'react-router-dom'; // Importation du hook useNavigate
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { AuthContext } from '../../context/AuthContext'; // Import du contexte
 
 function Connexion() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate(); // Initialisation de useNavigate
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useContext(AuthContext); // Accès à la fonction login du contexte
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validation et soumission du formulaire
-    if (!username || !password) {
-      setError('Tous les champs sont requis');
-    } else {
-      setError('');
-      // Simuler une connexion réussie
-      setTimeout(() => {
-        navigate('/'); // Redirection vers la page d'accueil après la connexion
-      }, 1000); // Attente de 1 seconde avant la redirection
+    setIsLoading(true);
+
+    if (!email || !password) {
+      toast.error('❌ Tous les champs sont requis');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/login', { email, password });
+      login(response.data.user); // Mise à jour du contexte utilisateur
+      toast.success('✅ Connexion réussie ! Redirection en cours...');
+      navigate('/mon-profil'); // Redirection immédiate après mise à jour du contexte
+    } catch (err) {
+      console.error(err);
+      toast.error('❌ Erreur lors de la connexion. Vérifiez vos identifiants.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -28,21 +40,30 @@ function Connexion() {
       <h1>Connexion</h1>
       <div className="form-container">
         <form onSubmit={handleSubmit}>
-          <input 
-            type="text" 
-            placeholder="Nom d'utilisateur" 
-            value={username} 
-            onChange={(e) => setUsername(e.target.value)} 
-          />
-          <input 
-            type="password" 
-            placeholder="Mot de passe" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-          />
-          <button type="submit">Se connecter</button>
+          <div className="form-group">
+            <label>Email :</label>
+            <input
+              type="email"
+              placeholder="Entrez votre email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Mot de passe :</label>
+            <input
+              type="password"
+              placeholder="Entrez votre mot de passe"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="submit-button" disabled={isLoading}>
+            {isLoading ? 'Connexion en cours...' : 'Se connecter'}
+          </button>
         </form>
-        {error && <p className="error-message">{error}</p>}
       </div>
     </div>
   );
