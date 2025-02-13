@@ -2,9 +2,11 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import mysql from 'mysql';
 import cors from 'cors';
+import jwt from 'jsonwebtoken'; // Importation de jsonwebtoken
 
 const app = express();
 const port = 5000;
+const JWT_SECRET = 'ton_super_secret_jwt'; // Clé secrète pour signer les tokens
 
 app.use(cors());
 app.use(express.json());
@@ -49,7 +51,7 @@ app.post('/api/register', async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, 10);
       const query = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
 
-      db.query(query, [username, email, hashedPassword], (err, result) => {
+      db.query(query, [username, email, hashedPassword], (err) => {
         if (err) {
           return res.status(500).json({ error: 'Erreur lors de l\'inscription' });
         }
@@ -84,8 +86,16 @@ app.post('/api/login', async (req, res) => {
         return res.status(400).json({ error: 'Email ou mot de passe incorrect' });
       }
 
+      // ✅ Génération du token JWT
+      const token = jwt.sign(
+        { id: user.id, email: user.email, name: user.name }, // Payload
+        JWT_SECRET, // Clé secrète
+        { expiresIn: '1h' } // Durée de validité
+      );
+
       res.status(200).json({
         message: 'Connexion réussie',
+        token: token,  // Le token est retourné ici
         user: {
           id: user.id,
           name: user.name,
