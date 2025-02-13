@@ -19,9 +19,9 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
   if (err) {
-    console.error('Erreur de connexion à la base de données', err);
+    console.error('❌ Erreur de connexion à la base de données :', err);
   } else {
-    console.log('Connecté à la base de données');
+    console.log('✅ Connecté à la base de données');
   }
 });
 
@@ -38,30 +38,66 @@ app.post('/api/register', async (req, res) => {
     return res.status(400).json({ error: 'Tous les champs sont requis' });
   }
 
-  // Vérifier si l'utilisateur existe déjà
-  db.query('SELECT * FROM users WHERE email = ?', [email], async (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: 'Erreur interne du serveur' });
-    }
+  try {
+    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, result) => {
+      if (err) return res.status(500).json({ error: 'Erreur interne du serveur' });
 
-    if (result.length > 0) {
-      return res.status(400).json({ error: 'Cet email est déjà utilisé' });
-    }
-
-    // Hachage du mot de passe
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Insertion de l'utilisateur dans la base de données
-    const query = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-    db.query(query, [username, email, hashedPassword], (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: 'Erreur lors de l\'inscription' });
+      if (result.length > 0) {
+        return res.status(400).json({ error: 'Cet email est déjà utilisé' });
       }
-      res.status(200).json({ message: 'Inscription réussie' });
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const query = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
+
+      db.query(query, [username, email, hashedPassword], (err, result) => {
+        if (err) {
+          return res.status(500).json({ error: 'Erreur lors de l\'inscription' });
+        }
+        res.status(200).json({ message: 'Inscription réussie' });
+      });
     });
-  });
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur lors de l\'inscription' });
+  }
+});
+
+// API de connexion
+app.post('/api/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Tous les champs sont requis' });
+  }
+
+  try {
+    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+      if (err) return res.status(500).json({ error: 'Erreur interne du serveur' });
+
+      if (results.length === 0) {
+        return res.status(400).json({ error: 'Email ou mot de passe incorrect' });
+      }
+
+      const user = results[0];
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        return res.status(400).json({ error: 'Email ou mot de passe incorrect' });
+      }
+
+      res.status(200).json({
+        message: 'Connexion réussie',
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+      });
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur lors de la connexion' });
+  }
 });
 
 app.listen(port, () => {
-  console.log(`Serveur en écoute sur http://localhost:${port}`);
+  console.log(`🚀 Serveur en écoute sur http://localhost:${port}`);
 });
