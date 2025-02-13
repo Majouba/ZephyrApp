@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-// Accéder à la clé API depuis le fichier .env
-const API_KEY = process.env.REACT_APP_API_KEY;  // Utilisez process.env pour accéder à votre variable
+const API_KEY = import.meta.env.VITE_API_KEY;  // Nouvelle syntaxe avec Vite
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
 
 const WeatherService = {

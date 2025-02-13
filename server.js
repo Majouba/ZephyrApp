@@ -13,7 +13,7 @@ const JWT_SECRET = 'ton_super_secret_jwt';
 app.use(cors());
 app.use(express.json());
 
-// Swagger configuration
+// Swagger configuration 
 const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
