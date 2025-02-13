@@ -3,21 +3,32 @@ import bcrypt from 'bcrypt';
 import mysql from 'mysql';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
 const app = express();
 const port = 5000;
-const JWT_SECRET = 'ton_super_secret_jwt'; // Clé secrète pour signer les tokens
+const JWT_SECRET = 'ton_super_secret_jwt';
 
 app.use(cors());
 app.use(express.json());
 
-// Middleware pour ignorer le parsing JSON sur les requêtes GET
-app.use((req, res, next) => {
-  if (req.method === 'GET') {
-    req.body = undefined;
-  }
-  next();
-});
+// Swagger configuration
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'ZephyrApp API Documentation',
+      version: '1.0.0',
+      description: 'API pour la gestion des utilisateurs : inscription, connexion, et accès protégé.',
+    },
+    servers: [{ url: 'http://localhost:5000' }],
+  },
+  apis: ['./server.js'],
+};
+
+const swaggerDocs = swaggerJSDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Connexion à la base de données
 const db = mysql.createConnection({
@@ -52,12 +63,46 @@ function verifyToken(req, res, next) {
   }
 }
 
-// Route de test
+/**
+ * @swagger
+ * /api/test:
+ *   get:
+ *     summary: Route de test.
+ *     description: Vérifie si l'API est accessible.
+ *     responses:
+ *       200:
+ *         description: API test accessible.
+ */
 app.get('/api/test', (req, res) => {
   res.status(200).json({ message: 'API test accessible' });
 });
 
-// API d'inscription
+/**
+ * @swagger
+ * /api/register:
+ *   post:
+ *     summary: Inscription d'un nouvel utilisateur.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Inscription réussie.
+ *       400:
+ *         description: Tous les champs sont requis ou email déjà utilisé.
+ *       500:
+ *         description: Erreur interne du serveur.
+ */
 app.post('/api/register', async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -88,7 +133,30 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// API de connexion
+/**
+ * @swagger
+ * /api/login:
+ *   post:
+ *     summary: Connexion de l'utilisateur.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Connexion réussie, retourne un token JWT.
+ *       400:
+ *         description: Email ou mot de passe incorrect.
+ *       500:
+ *         description: Erreur interne du serveur.
+ */
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -132,7 +200,27 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Route protégée nécessitant un token
+/**
+ * @swagger
+ * /api/protected:
+ *   get:
+ *     summary: Route protégée nécessitant un token JWT.
+ *     description: Cette route est accessible uniquement aux utilisateurs authentifiés.
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Token JWT sous la forme `Bearer <token>`.
+ *     responses:
+ *       200:
+ *         description: Accès à la route protégée.
+ *       401:
+ *         description: Token invalide ou expiré.
+ *       403:
+ *         description: Token requis.
+ */
 app.get('/api/protected', verifyToken, (req, res) => {
   res.status(200).json({
     message: 'Route protégée accessible',
@@ -142,4 +230,5 @@ app.get('/api/protected', verifyToken, (req, res) => {
 
 app.listen(port, () => {
   console.log(`🚀 Serveur en écoute sur http://localhost:${port}`);
+  console.log(`📄 Documentation Swagger disponible sur http://localhost:${port}/api-docs`);
 });
