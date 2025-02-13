@@ -3,13 +3,14 @@ import './App.css';
 import WeatherService from './services/WeatherService';
 import WeatherCard from './components/WeatherCard/WeatherCard';
 import SearchInput from './components/SearchInput/SearchInput';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom'; // Ajout de Navigate
 import { useAuth } from './context/AuthContext';
-import NavBar from './components/NavBar/NavBar'; // Importation de NavBar
+import NavBar from './components/NavBar/NavBar';
 import MapPage from './pages/MapPage/MapPage';
 import Connexion from './pages/Connexion/Connexion';
 import Inscription from './pages/Inscription/Inscription';
 import MonProfil from './pages/MonProfil/MonProfil';
+import ProtectedRoute from './utils/ProtectedRoute';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -39,8 +40,7 @@ function App() {
   return (
     <Router>
       <div className="container">
-        <NavBar /> {/* Remplacement du code de navigation par NavBar */}
-        
+        <NavBar />
         <Routes>
           <Route
             path="/"
@@ -59,12 +59,18 @@ function App() {
               </div>
             }
           />
-          <Route path="/map" element={user ? <MapPage /> : <Navigate to="/connexion" />} />
-          <Route path="/connexion" element={user ? <Navigate to="/mon-profil" /> : <Connexion />} />
-          <Route path="/inscription" element={user ? <Navigate to="/mon-profil" /> : <Inscription />} />
-          <Route path="/mon-profil" element={user ? <MonProfil /> : <Navigate to="/connexion" />} />
+          <Route
+            path="/map"
+            element={
+              <ProtectedRoute>
+                <MapPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/connexion" element={user ? <Navigate to="/mon-profil" replace /> : <Connexion />} />
+          <Route path="/inscription" element={user ? <Navigate to="/mon-profil" replace /> : <Inscription />} />
+          <Route path="/mon-profil" element={user ? <MonProfil /> : <Navigate to="/connexion" replace />} />
         </Routes>
-
         <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop />
       </div>
     </Router>
