@@ -3,13 +3,16 @@ import bcrypt from 'bcrypt';
 import mysql from 'mysql';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import preferencesRoutes from './src/routes/preferencesRoutes.js'; // Import des routes pour les préférences
+import preferencesRoutes from './src/routes/preferencesRoutes.js';
+
+dotenv.config(); // Charger les variables d'environnement
 
 const app = express();
-const port = 5000;
-const JWT_SECRET = 'ton_super_secret_jwt';
+const port = process.env.PORT || 5000;
+const JWT_SECRET = process.env.JWT_SECRET || 'default_jwt_secret_key';
 
 app.use(cors());
 app.use(express.json());
@@ -23,7 +26,7 @@ const swaggerOptions = {
       version: '1.0.0',
       description: 'API pour la gestion des utilisateurs : inscription, connexion, mise à jour et accès protégé.',
     },
-    servers: [{ url: 'http://localhost:5000' }],
+    servers: [{ url: `http://localhost:${port}` }],
   },
   apis: ['./server.js'],
 };
@@ -33,10 +36,10 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Connexion à la base de données
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'ZephyrApp',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
 db.connect((err) => {
@@ -227,19 +230,27 @@ app.post('/api/login', async (req, res) => {
  *     responses:
  *       200:
  *         description: Informations mises à jour avec succès.
+ *       404:
+ *         description: Utilisateur non trouvé.
  *       500:
- *         description: Erreur lors de la mise à jour.
+ *         description: Erreur interne du serveur.
  */
 app.put('/api/users/:id', (req, res) => {
   const { id } = req.params;
   const { name, email } = req.body;
 
   const query = 'UPDATE users SET name = ?, email = ? WHERE id = ?';
-  db.query(query, [name, email, id], (err) => {
+  db.query(query, [name, email, id], (err, results) => {
     if (err) {
-      return res.status(500).json({ error: 'Erreur lors de la mise à jour des informations.' });
+      console.error('Erreur lors de la mise à jour des informations :', err);
+      return res.status(500).json({ error: 'Erreur interne du serveur.' });
     }
-    res.status(200).json({ message: 'Informations mises à jour avec succès !', user: { id, name, email } });
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Utilisateur non trouvé.' });
+    }
+
+    res.status(200).json({ message: 'Informations mises à jour avec succès !' });
   });
 });
 

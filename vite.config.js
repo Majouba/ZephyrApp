@@ -11,4 +11,11 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    strictPort: true,      // Empêche Vite de changer de port si le 5173 est occupé
+    watch: {
+      usePolling: true,    // Active le polling pour surveiller les changements de fichiers
+    },
+    open: true,            // Ouvre automatiquement l'application dans le navigateur
+  },
 });

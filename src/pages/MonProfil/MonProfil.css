@@ -3,74 +3,59 @@
   padding: 20px;
   max-width: 600px;
   margin: 0 auto;
-  background-color: #f4f4f4;
+  background: linear-gradient(135deg, #2c3e50, #4b79a1);
+  color: white;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.profil-details {
-  margin: 20px 0;
-  font-size: 18px;
+.profil-form {
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
   text-align: left;
 }
 
-.profil-details label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.profil-details input {
+.form-group input {
   width: 100%;
   padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
   border-radius: 5px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.7);
+  outline: none;
+}
+
+.update-button,
+.logout-button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 15px;
 }
 
 .update-button {
   background-color: #27ae60;
   color: white;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s;
-  font-weight: bold;
 }
 
 .update-button:hover {
   background-color: #219150;
 }
 
-.update-button:disabled {
-  background-color: #95a5a6;
-  cursor: not-allowed;
-}
-
-.message {
-  margin-top: 10px;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.success {
-  color: #2ecc71;
-}
-
-.error {
-  color: #e74c3c;
-}
-
 .logout-button {
   background-color: #e74c3c;
   color: white;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  font-weight: bold;
-  transition: background-color 0.3s;
 }
 
 .logout-button:hover {

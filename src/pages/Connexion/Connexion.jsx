@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
@@ -10,8 +10,15 @@ const Connexion = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const { login } = useContext(AuthContext);
+  const { user, login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Redirection si l'utilisateur est déjà connecté
+  if (user) {
+    navigate('/mon-profil', { replace: true });
+    return null;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,10 +36,20 @@ const Connexion = () => {
       const response = await axios.post('http://localhost:5000/api/login', { email, password });
       login(response.data.user);
       toast.success('✅ Connexion réussie ! Redirection en cours...');
-      navigate('/mon-profil');
+      
+      // Redirection dynamique vers la page initialement demandée
+      const from = location.state?.from?.pathname || '/mon-profil';
+      navigate(from, { replace: true });
+
     } catch (error) {
-      setErrorMessage('❌ Erreur lors de la connexion. Vérifiez vos identifiants.');
-      toast.error('❌ Erreur lors de la connexion. Vérifiez vos identifiants.');
+      const status = error.response?.status;
+      if (status === 401) {
+        setErrorMessage('❌ Identifiants incorrects.');
+        toast.error('❌ Identifiants incorrects.');
+      } else {
+        setErrorMessage('❌ Une erreur est survenue. Veuillez réessayer.');
+        toast.error('❌ Une erreur est survenue.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -66,7 +83,7 @@ const Connexion = () => {
             />
           </div>
           {errorMessage && (
-            <div role="alert" className="error-message">
+            <div role="alert" aria-live="assertive" className="error-message">
               {errorMessage}
             </div>
           )}

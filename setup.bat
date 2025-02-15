@@ -1,4 +1,8 @@
 @echo off
+:: Configuration du script
+setlocal enabledelayedexpansion
+cls
+title Setup ZephyrApp
 echo ======================================================
 echo 🔄 Mise à jour et installation des dépendances...
 npm install
@@ -15,56 +19,41 @@ if exist .env (
     exit /b
 )
 
-:: Vérifie si 'concurrently' est installé
-echo ======================================================
-echo ⚙️ Vérification de 'concurrently'...
-npm list concurrently >nul 2>&1
-if errorlevel 1 (
-    echo 🛠️ 'concurrently' non trouvé. Installation en cours...
-    npm install concurrently --save-dev
-) else (
-    echo ✅ 'concurrently' déjà installé.
+:: Fonction de vérification et d'installation des packages npm
+set packages=concurrently react-toastify react-loader-spinner react-leaflet leaflet
+
+for %%p in (%packages%) do (
+    echo ======================================================
+    echo ⚙️ Vérification de "%%p"...
+    npm list %%p >nul 2>&1
+    if errorlevel 1 (
+        echo 🛠️ "%%p" non trouvé. Installation en cours...
+        npm install %%p --save
+    ) else (
+        echo ✅ "%%p" déjà installé.
+    )
 )
 
-:: Vérifie si 'react-toastify' est installé
+:: Vérifie si le backend est configuré
 echo ======================================================
-echo ⚙️ Vérification de 'react-toastify'...
-npm list react-toastify >nul 2>&1
-if errorlevel 1 (
-    echo 🛠️ 'react-toastify' non trouvé. Installation en cours...
-    npm install react-toastify --save
+echo ⚙️ Vérification du backend...
+if not exist server.js (
+    echo ❌ Le fichier "server.js" est introuvable. Assurez-vous que le backend est configuré.
+    pause
+    exit /b
 ) else (
-    echo ✅ 'react-toastify' déjà installé.
+    echo ✅ Le backend est correctement configuré.
 )
 
-:: Vérifie si 'react-loader-spinner' est installé
+:: Vérifie si le frontend est configuré
 echo ======================================================
-echo ⚙️ Vérification de 'react-loader-spinner'...
-npm list react-loader-spinner >nul 2>&1
-if errorlevel 1 (
-    echo 🛠️ 'react-loader-spinner' non trouvé. Installation en cours...
-    npm install react-loader-spinner --save
+echo ⚙️ Vérification du frontend...
+if not exist src\index.html (
+    echo ❌ Le fichier "index.html" est introuvable dans le frontend. Vérifiez votre configuration.
+    pause
+    exit /b
 ) else (
-    echo ✅ 'react-loader-spinner' déjà installé.
-)
-
-:: Vérifie si 'react-leaflet' et 'leaflet' sont installés
-echo ======================================================
-echo ⚙️ Vérification de 'react-leaflet' et 'leaflet'...
-npm list react-leaflet >nul 2>&1
-if errorlevel 1 (
-    echo 🛠️ 'react-leaflet' non trouvé. Installation en cours...
-    npm install react-leaflet --save
-) else (
-    echo ✅ 'react-leaflet' déjà installé.
-)
-
-npm list leaflet >nul 2>&1
-if errorlevel 1 (
-    echo 🛠️ 'leaflet' non trouvé. Installation en cours...
-    npm install leaflet --save
-) else (
-    echo ✅ 'leaflet' déjà installé.
+    echo ✅ Le frontend est correctement configuré.
 )
 
 :: Lancer le backend et le frontend

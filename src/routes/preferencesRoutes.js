@@ -1,14 +1,17 @@
 import express from 'express';
 import mysql from 'mysql';
+import dotenv from 'dotenv';  // Charger les variables d'environnement
+
+dotenv.config();  // Charger les variables du fichier .env
 
 const router = express.Router();
 
 // Connexion à la base de données
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'ZephyrApp',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
 db.connect((err) => {
