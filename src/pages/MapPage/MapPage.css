@@ -1,0 +1,14 @@
+.map-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .map-container img {
+    cursor: pointer;
+    border: 1px solid #ccc;
+  }
+  
+  .map-container area {
+    outline: none;
+  }
+  

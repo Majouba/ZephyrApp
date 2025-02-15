@@ -48,10 +48,29 @@ if errorlevel 1 (
     echo ✅ 'react-loader-spinner' déjà installé.
 )
 
+:: Vérifie si 'react-leaflet' et 'leaflet' sont installés
+echo ======================================================
+echo ⚙️ Vérification de 'react-leaflet' et 'leaflet'...
+npm list react-leaflet >nul 2>&1
+if errorlevel 1 (
+    echo 🛠️ 'react-leaflet' non trouvé. Installation en cours...
+    npm install react-leaflet --save
+) else (
+    echo ✅ 'react-leaflet' déjà installé.
+)
+
+npm list leaflet >nul 2>&1
+if errorlevel 1 (
+    echo 🛠️ 'leaflet' non trouvé. Installation en cours...
+    npm install leaflet --save
+) else (
+    echo ✅ 'leaflet' déjà installé.
+)
+
 :: Lancer le backend et le frontend
 echo ======================================================
 echo 🚀 Lancement du serveur backend et frontend...
-npx concurrently "node server.js" "npm run dev"
+npx concurrently "npm run start-backend" "npm run dev-all"
 
 :: Afficher les URLs
 echo ======================================================

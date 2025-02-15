@@ -21,11 +21,13 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "leaflet": "^1.9.4",
     "lottie-react": "^2.4.1",
     "mysql": "^2.18.1",
     "react": "^18.3.1",
     "react-autosuggest": "^10.1.0",
     "react-dom": "^18.3.1",
+    "react-leaflet": "^4.2.1",
     "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^7.1.5",
     "react-toastify": "^11.0.3",
@@ -55,6 +57,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "jsdom": "^21.1.1",
     "rimraf": "^5.0.10",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "vite-plugin-svgr": "^4.3.0"
   }
 }

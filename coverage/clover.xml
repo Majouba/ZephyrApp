@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1739477181515" clover="3.2.0">
-  <project timestamp="1739477181515" name="All files">
-    <metrics statements="95" coveredstatements="85" conditionals="34" coveredconditionals="27" methods="22" coveredmethods="22" elements="151" coveredelements="134" complexity="0" loc="95" ncloc="95" packages="7" files="7" classes="7"/>
+<coverage generated="1739540608463" clover="3.2.0">
+  <project timestamp="1739540608463" name="All files">
+    <metrics statements="94" coveredstatements="84" conditionals="34" coveredconditionals="27" methods="21" coveredmethods="21" elements="149" coveredelements="132" complexity="0" loc="94" ncloc="94" packages="6" files="6" classes="6"/>
     <package name="components.SearchInput">
       <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <file name="SearchInput.jsx" path="C:\Users\z270\ZephyrApp\src\components\SearchInput\SearchInput.jsx">
@@ -77,12 +77,12 @@
       <metrics statements="19" coveredstatements="19" conditionals="2" coveredconditionals="2" methods="5" coveredmethods="5"/>
       <file name="Inscription.jsx" path="C:\Users\z270\ZephyrApp\src\pages\Inscription\Inscription.jsx">
         <metrics statements="19" coveredstatements="19" conditionals="2" coveredconditionals="2" methods="5" coveredmethods="5"/>
-        <line num="9" count="19" type="stmt"/>
-        <line num="10" count="19" type="stmt"/>
-        <line num="11" count="19" type="stmt"/>
-        <line num="12" count="19" type="stmt"/>
-        <line num="13" count="19" type="stmt"/>
-        <line num="15" count="19" type="stmt"/>
+        <line num="9" count="20" type="stmt"/>
+        <line num="10" count="20" type="stmt"/>
+        <line num="11" count="20" type="stmt"/>
+        <line num="12" count="20" type="stmt"/>
+        <line num="13" count="20" type="stmt"/>
+        <line num="15" count="20" type="stmt"/>
         <line num="16" count="3" type="stmt"/>
         <line num="17" count="3" type="stmt"/>
         <line num="19" count="3" type="stmt"/>
@@ -92,17 +92,10 @@
         <line num="31" count="1" type="stmt"/>
         <line num="32" count="1" type="stmt"/>
         <line num="34" count="3" type="stmt"/>
-        <line num="38" count="19" type="stmt"/>
+        <line num="38" count="20" type="stmt"/>
         <line num="47" count="3" type="stmt"/>
         <line num="57" count="3" type="stmt"/>
         <line num="67" count="3" type="stmt"/>
-      </file>
-    </package>
-    <package name="pages.MapPage">
-      <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-      <file name="MapPage.jsx" path="C:\Users\z270\ZephyrApp\src\pages\MapPage\MapPage.jsx">
-        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-        <line num="4" count="1" type="stmt"/>
       </file>
     </package>
     <package name="pages.MonProfil">

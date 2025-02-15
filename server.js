@@ -5,6 +5,7 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import preferencesRoutes from './src/routes/preferencesRoutes.js'; // Import des routes pour les préférences
 
 const app = express();
 const port = 5000;
@@ -241,6 +242,9 @@ app.put('/api/users/:id', (req, res) => {
     res.status(200).json({ message: 'Informations mises à jour avec succès !', user: { id, name, email } });
   });
 });
+
+// Utilisation des routes preferences
+app.use('/api/preferences', preferencesRoutes);
 
 app.listen(port, () => {
   console.log(`🚀 Serveur en écoute sur http://localhost:${port}`);

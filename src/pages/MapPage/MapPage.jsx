@@ -1,13 +1,13 @@
 import React from 'react';
+import './MapPage.css';
 
-function MapPage() {
+const MapPage = () => {
   return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h1>Page Carte</h1>
-      <p>Affichage de la carte ici.</p>
-      {/* Intègre ici un composant de carte si nécessaire */}
+    <div className="map-page">
+      <h1>Carte Interactive des Régions</h1>
+      <p>La carte interactive sera ajoutée ici plus tard.</p>
     </div>
   );
-}
+};
 
 export default MapPage;
