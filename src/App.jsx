@@ -3,11 +3,11 @@ import './App.css';
 import WeatherService from './services/WeatherService';
 import WeatherCard from './components/WeatherCard/WeatherCard';
 import ForecastCard from './components/ForecastCard/ForecastCard';
-import SearchInput from './components/SearchInputs/SearchInput'; // Correction ici
+import SearchInput from './components/SearchInputs/SearchInput';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
-import NavBar from './components/Common/NavBar/NavBar'; // Correction ici
-import MapPage from './pages/MapPage/MapPage';
+import NavBar from './components/Common/NavBar/NavBar';
+import AlertePage from './pages/AlertePage/AlertePage'; // ✅ Import mis à jour
 import Connexion from './pages/Connexion/Connexion';
 import Inscription from './pages/Inscription/Inscription';
 import MonProfil from './pages/MonProfil/MonProfil';
@@ -19,7 +19,7 @@ function App() {
   const { user, loading } = useAuth();
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState(null);
-  const [forecast, setForecast] = useState(null); // Prévision pour demain, initialisée à null
+  const [forecast, setForecast] = useState(null);
 
   const fetchWeather = async () => {
     if (!city.trim()) {
@@ -35,7 +35,7 @@ function App() {
       toast.success('🌞 Météo actuelle récupérée avec succès !');
 
       const forecastData = await WeatherService.getForecastByCity(city);
-      setForecast(forecastData[0]); // Utiliser uniquement la première prévision pour demain
+      setForecast(forecastData[0]);
       toast.success('📅 Prévision pour demain récupérée avec succès !');
     } catch (err) {
       console.error(err);
@@ -80,10 +80,10 @@ function App() {
             }
           />
           <Route
-            path="/map"
+            path="/alerte" // ✅ Nouvelle route pour la page d'alertes
             element={
               <ProtectedRoute>
-                <MapPage />
+                <AlertePage />
               </ProtectedRoute>
             }
           />

@@ -1,9 +1,9 @@
 // src/components/Common/NavBar/NavBar.jsx
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../../../context/AuthContext'; // Chemin corrigé
+import { useAuth } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
-import './NavBar.css'; // Import des styles spécifiques
+import './NavBar.css';
 
 function NavBar() {
   const { user, logout } = useAuth();
@@ -20,15 +20,16 @@ function NavBar() {
         <li className="nav-item">
           <Link to="/" className="nav-link">Accueil</Link>
         </li>
+
         {!user ? (
           <>
             <li className="nav-item">
-              <Link to="/inscription">
+              <Link to="/inscription" className="nav-link">
                 <button className="nav-button">Inscription</button>
               </Link>
             </li>
             <li className="nav-item">
-              <Link to="/connexion">
+              <Link to="/connexion" className="nav-link">
                 <button className="nav-button">Connexion</button>
               </Link>
             </li>
@@ -36,17 +37,19 @@ function NavBar() {
         ) : (
           <>
             <li className="nav-item">
-              <Link to="/mon-profil">
+              <Link to="/mon-profil" className="nav-link">
                 <button className="nav-button">Mon Profil</button>
               </Link>
             </li>
-            {location.pathname !== '/' && (
+
+            {location.pathname !== '/alerte' && (
               <li className="nav-item">
-                <Link to="/map">
-                  <button className="nav-button">Carte</button>
+                <Link to="/alerte" className="nav-link">
+                  <button className="nav-button">Alertes</button>
                 </Link>
               </li>
             )}
+
             <li className="nav-item">
               <button className="nav-button" onClick={handleLogout}>
                 Se déconnecter

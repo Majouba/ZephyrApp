@@ -8,11 +8,14 @@ import { toast } from 'react-toastify';
 function MonProfil() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [temperature, setTemperature] = useState('');
   const [humidity, setHumidity] = useState('');
   const [wind, setWind] = useState('');
+  const [favorites, setFavorites] = useState([]);
+  const [newCity, setNewCity] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -20,18 +23,29 @@ function MonProfil() {
       try {
         const response = await axios.get(`http://localhost:5000/api/preferences/${user.id}`);
         if (response.data?.preferences) {
-          const { temperature_threshold, humidity_threshold, wind_threshold } = response.data.preferences;
+          const {
+            temperature_threshold,
+            humidity_threshold,
+            wind_threshold,
+            favorite_cities,
+          } = response.data.preferences;
+
           setTemperature(temperature_threshold || '');
           setHumidity(humidity_threshold || '');
           setWind(wind_threshold || '');
+          // Convertir les villes récupérées en minuscules pour normaliser
+          setFavorites((favorite_cities || []).map(city => city.toLowerCase()));
         }
       } catch (error) {
         console.error('Erreur lors du chargement des préférences', error);
         toast.error('❌ Impossible de charger les préférences.');
       }
     };
-    fetchPreferences();
-  }, [user.id]);
+
+    if (user?.id) {
+      fetchPreferences();
+    }
+  }, [user?.id]);
 
   const handleInputLimit = (value, min, max) => {
     const num = parseInt(value, 10);
@@ -39,19 +53,42 @@ function MonProfil() {
     return Math.max(min, Math.min(num, max));
   };
 
+  const handleAddCity = () => {
+    const trimmed = newCity.trim().toLowerCase();
+    if (trimmed && !favorites.includes(trimmed)) {
+      setFavorites([...favorites, trimmed]);
+      setNewCity('');
+    } else if (favorites.includes(trimmed)) {
+      toast.warning('⚠️ Cette ville est déjà dans vos favoris.');
+    }
+  };
+
+  const handleRemoveCity = (city) => {
+    setFavorites(favorites.filter((fav) => fav !== city));
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      await axios.put(`http://localhost:5000/api/users/${user.id}`, { name, email });
+      await axios.put(`http://localhost:5000/api/users/${user.id}`, {
+        name,
+        email,
+      });
+
+      // Préparer les villes en minuscules avant l'envoi
+      const lowerCaseFavorites = favorites.map((city) => city.toLowerCase());
+
       await axios.post('http://localhost:5000/api/preferences/update', {
         userId: user.id,
         temperature: parseInt(temperature, 10),
         humidity: parseInt(humidity, 10),
         wind: parseInt(wind, 10),
+        favorite_cities: lowerCaseFavorites,
       });
-      toast.success('✅ Informations et seuils mis à jour avec succès !');
+
+      toast.success('✅ Informations et préférences mises à jour avec succès !');
     } catch (error) {
       console.error('Erreur lors de la mise à jour :', error);
       toast.error('❌ Erreur lors de la mise à jour.');
@@ -86,6 +123,7 @@ function MonProfil() {
             required
           />
         </div>
+
         <div className="form-group">
           <label htmlFor="email">Email :</label>
           <input
@@ -96,6 +134,7 @@ function MonProfil() {
             required
           />
         </div>
+
         <div className="form-group">
           <label htmlFor="temperature">Seuil de température (°C) :</label>
           <input
@@ -108,6 +147,7 @@ function MonProfil() {
             required
           />
         </div>
+
         <div className="form-group">
           <label htmlFor="humidity">Seuil d'humidité (%) :</label>
           <input
@@ -120,6 +160,7 @@ function MonProfil() {
             required
           />
         </div>
+
         <div className="form-group">
           <label htmlFor="wind">Seuil du vent (km/h) :</label>
           <input
@@ -132,10 +173,33 @@ function MonProfil() {
             required
           />
         </div>
+
+        <div className="form-group">
+          <label htmlFor="favorites">Villes favorites :</label>
+          <div className="favorite-input-container">
+            <input
+              type="text"
+              value={newCity}
+              onChange={(e) => setNewCity(e.target.value)}
+              placeholder="Entrez une ville"
+            />
+            <button type="button" onClick={handleAddCity}>Ajouter</button>
+          </div>
+          <ul className="favorites-list">
+            {favorites.map((city, index) => (
+              <li key={index}>
+                {city}
+                <button type="button" onClick={() => handleRemoveCity(city)}>❌</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <button type="submit" className="update-button" disabled={isLoading}>
           {isLoading ? 'Mise à jour...' : 'Mettre à jour'}
         </button>
       </form>
+
       <button className="logout-button" onClick={handleLogout}>
         Se déconnecter
       </button>
