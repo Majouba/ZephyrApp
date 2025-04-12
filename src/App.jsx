@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { useState } from 'react';
 import './App.css';
 import WeatherService from './services/WeatherService';
@@ -7,7 +8,7 @@ import SearchInput from './components/SearchInputs/SearchInput';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import NavBar from './components/Common/NavBar/NavBar';
-import AlertePage from './pages/AlertePage/AlertePage'; // ✅ Import mis à jour
+import AlertePage from './pages/AlertePage/AlertePage';
 import Connexion from './pages/Connexion/Connexion';
 import Inscription from './pages/Inscription/Inscription';
 import MonProfil from './pages/MonProfil/MonProfil';
@@ -61,11 +62,6 @@ function App() {
                 <h1>Météo en direct</h1>
                 <div className="search-section">
                   <SearchInput city={city} setCity={setCity} onSearch={fetchWeather} />
-                  {user && (
-                    <button className="map-button" onClick={() => toast.info('La carte arrive bientôt !')}>
-                      Carte
-                    </button>
-                  )}
                 </div>
                 {weather && <WeatherCard weather={weather} />}
                 {forecast && (
@@ -80,7 +76,7 @@ function App() {
             }
           />
           <Route
-            path="/alerte" // ✅ Nouvelle route pour la page d'alertes
+            path="/alerte"
             element={
               <ProtectedRoute>
                 <AlertePage />
