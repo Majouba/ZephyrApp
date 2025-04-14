@@ -4,6 +4,8 @@ import mysql from 'mysql';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { XMLParser } from 'fast-xml-parser';
+import fetch from 'node-fetch';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import preferencesRoutes from './src/routes/preferencesRoutes.js';
@@ -256,6 +258,21 @@ app.put('/api/users/:id', (req, res) => {
 
 // Utilisation des routes preferences
 app.use('/api/preferences', preferencesRoutes);
+
+// import { getDisasterAlerts } from './src/services/gdacsService.js';
+
+// server.js
+import { getDisasterAlerts } from './server/services/gdacsServiceBack.js'; // nouveau chemin
+
+app.get('/api/gdacs/alerts', async (req, res) => {
+  try {
+    const alerts = await getDisasterAlerts();
+    res.status(200).json({ alerts });
+  } catch (err) {
+    console.error('❌ Erreur proxy GDACS :', err.message);
+    res.status(500).json({ error: 'Erreur lors de la récupération des données GDACS.' });
+  }
+});
 
 app.listen(port, () => {
   console.log(`🚀 Serveur en écoute sur http://localhost:${port}`);

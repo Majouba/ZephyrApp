@@ -20,7 +20,7 @@ if exist .env (
 )
 
 :: Fonction de vérification et d'installation des packages npm
-set packages=concurrently react-toastify react-loader-spinner react-leaflet leaflet lodash.debounce
+set packages=concurrently react-toastify react-loader-spinner react-leaflet leaflet lodash.debounce fast-xml-parser i18n-iso-countries
 
 for %%p in (%packages%) do (
     echo ======================================================

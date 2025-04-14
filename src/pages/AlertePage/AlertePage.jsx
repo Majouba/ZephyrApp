@@ -1,8 +1,11 @@
+// src/pages/AlertePage.jsx
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './AlertePage.css';
+import { getDisasterAlerts } from '../../services/gdacsService';
+import { getCountryNameFromCode } from '../../utils/countryUtils';
 
 function AlertePage() {
   const { user } = useContext(AuthContext);
@@ -43,6 +46,7 @@ function AlertePage() {
         }
 
         const totalThreshold = temperature_threshold + humidity_threshold + wind_threshold;
+        const gdacsData = await getDisasterAlerts();
 
         const promises = favorite_cities.map(async (city) => {
           try {
@@ -50,11 +54,13 @@ function AlertePage() {
 
             const weatherRes = await axios.get(
               `https://api.openweathermap.org/data/2.5/weather?q=${encodedCity}&units=metric&lang=fr&appid=${API_KEY}`
-            );            
+            );
 
             const { temp, humidity } = weatherRes.data.main;
             const wind = weatherRes.data.wind?.speed || 0;
             const condition = weatherRes.data.weather[0].description;
+            const countryCode = weatherRes.data.sys?.country || '';
+            const countryName = getCountryNameFromCode(countryCode);
 
             const actualTotal = temp + humidity + wind;
             const percent = (actualTotal / totalThreshold) * 100;
@@ -63,6 +69,10 @@ function AlertePage() {
             if (percent >= 80) alertLevel = 'red';
             else if (percent > 35) alertLevel = 'orange';
 
+            const matchedGDACS = gdacsData.find(alert =>
+              alert.countries.some(c => c.toLowerCase().includes(countryName?.toLowerCase()))
+            );
+
             return {
               city,
               temp,
@@ -70,7 +80,8 @@ function AlertePage() {
               wind,
               condition,
               alertLevel,
-              percent: percent.toFixed(1)
+              percent: percent.toFixed(1),
+              gdacs: matchedGDACS || null
             };
           } catch (err) {
             console.warn(`🌍 Erreur pour la ville "${city}" :`, err.message);
@@ -94,15 +105,40 @@ function AlertePage() {
     navigate('/mon-profil');
   };
 
+  const traduireTitre = (titre) => {
+    if (!titre) return '';
+    return titre
+      .replace('Drought is on going in', 'Une sécheresse est en cours en')
+      .replace('Flood is on going in', 'Une inondation est en cours en')
+      .replace('Earthquake is on going in', 'Un tremblement de terre est en cours en')
+      .replace('Cyclone is on going in', 'Un cyclone est en cours en');
+  };
+
+  const traduireDescription = (desc) => {
+    if (!desc) return '';
+    return desc
+      .replace(/The Drought alert level is Green\.?/, 'Le niveau d\'alerte sécheresse est Vert.')
+      .replace(/The Drought alert level is Orange\.?/, 'Le niveau d\'alerte sécheresse est Orange.')
+      .replace(/The Drought alert level is Red\.?/, 'Le niveau d\'alerte sécheresse est Rouge.')
+      .replace(/The Flood alert level is Green\.?/, 'Le niveau d\'alerte inondation est Vert.')
+      .replace(/The Flood alert level is Orange\.?/, 'Le niveau d\'alerte inondation est Orange.')
+      .replace(/The Flood alert level is Red\.?/, 'Le niveau d\'alerte inondation est Rouge.')
+      .replace(/The Earthquake alert level is Green\.?/, 'Le niveau d\'alerte séisme est Vert.')
+      .replace(/The Earthquake alert level is Orange\.?/, 'Le niveau d\'alerte séisme est Orange.')
+      .replace(/The Earthquake alert level is Red\.?/, 'Le niveau d\'alerte séisme est Rouge.')
+      .replace(/The Cyclone alert level is Green\.?/, 'Le niveau d\'alerte cyclone est Vert.')
+      .replace(/The Cyclone alert level is Orange\.?/, 'Le niveau d\'alerte cyclone est Orange.')
+      .replace(/The Cyclone alert level is Red\.?/, 'Le niveau d\'alerte cyclone est Rouge.');
+  };
+
   return (
     <div className="alert-page">
       <h1>📡 Alertes Météo</h1>
 
-      {/* ✅ Explication visible uniquement si préférences valides */}
       {hasPreferences && alerts.length > 0 && (
         <p className="alert-explanation">
           Le niveau d’alerte est basé sur la somme de vos seuils de tolérance définis (température, humidité, vent).
-          Si les conditions actuelles atteignent plus de <strong>80%</strong> de cette somme, la carte devient <span style={{ color: '#c0392b' }}><strong>rouge</strong></span>,
+          Si les conditions actuelles atteignent plus de <strong>80%</strong>, la carte devient <span style={{ color: '#c0392b' }}><strong>rouge</strong></span>,
           au-delà de <strong>35%</strong> elle est <span style={{ color: '#f39c12' }}><strong>orange</strong></span>, et en dessous elle reste <span style={{ color: '#27ae60' }}><strong>verte</strong></span>.
         </p>
       )}
@@ -126,6 +162,23 @@ function AlertePage() {
               <p>💨 Vent : {Math.round(a.wind)} km/h</p>
               <p>☁️ Conditions : {a.condition}</p>
               <p>⚠️ Niveau d'alerte : {a.percent}%</p>
+
+              {a.gdacs ? (
+                <div className="gdacs-alert">
+                  <p>🚨 <strong>Catastrophe détectée</strong></p>
+                  <p>{traduireTitre(a.gdacs.title)}</p>
+                  <p>{traduireDescription(a.gdacs.description)}</p>
+                  {a.gdacs.link && (
+                    <p>
+                      🔗 <a href={a.gdacs.link} target="_blank" rel="noopener noreferrer">
+                        Voir plus d'infos
+                      </a>
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="no-disaster">✅ Aucun événement catastrophique signalé dans ce pays.</p>
+              )}
             </div>
           ))}
         </div>

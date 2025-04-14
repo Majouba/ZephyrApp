@@ -68,7 +68,7 @@ function App() {
                   <div className="forecast-section">
                     <h2>Prévision pour demain</h2>
                     <div className="forecast-list">
-                      <ForecastCard forecast={forecast} />
+                      <ForecastCard forecast={forecast} countryCode={weather.sys.country} />
                     </div>
                   </div>
                 )}
