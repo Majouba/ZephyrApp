@@ -80,7 +80,7 @@ function Inscription() {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="password">Mot de passe :</label>
+          <label htmlFor="password" className="form-group">Mot de passe :</label>
           <input
             id="password"
             type="password"

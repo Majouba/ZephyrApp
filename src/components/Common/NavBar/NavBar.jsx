@@ -1,9 +1,9 @@
-// src/components/Common/NavBar/NavBar.jsx
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
 import './NavBar.css';
+const logo = "/images/Zephyr.png";
 
 function NavBar() {
   const { user, logout } = useAuth();
@@ -17,12 +17,13 @@ function NavBar() {
   return (
     <nav className="nav-bar">
       <ul className="nav-list">
-        <li className="nav-item">
+        <li className="nav-item nav-logo-container">
+          <img src={logo} alt="Logo" className="nav-logo" />
           <Link to="/" className="nav-link">Accueil</Link>
         </li>
 
         {!user ? (
-          <>
+          <div className="auth-buttons">
             <li className="nav-item">
               <Link to="/inscription" className="nav-link">
                 <button className="nav-button">Inscription</button>
@@ -33,7 +34,7 @@ function NavBar() {
                 <button className="nav-button">Connexion</button>
               </Link>
             </li>
-          </>
+          </div>
         ) : (
           <>
             <li className="nav-item">
